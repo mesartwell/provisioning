@@ -1,0 +1,6 @@
+---
+users:
+  matt:
+    password: $6$nBvl4rhH$8R0Oroag2X.JoYeLQwHxJVv7/4Q68Rpiun1/c3vJTSZyKlthbr3/e.Mrg2KDZppxBX1LNTViLbyh1EkpRHX..0
+    shell: /bin/zsh
+    groups: "sudo"

@@ -1,0 +1,145 @@
+# To run: docker-compose up [-d for background launch]
+#
+# Create a .evn file in the same folder as this file and change the variables.
+# MOUNT_POINT=/tmp/
+# VPN_PROVIDER=changeme
+# VPN_CONFIG=changeme
+# VPN_USERNAME=changeme
+# VPN_PASSWORD=changeme
+# LOCAL_NET=192.168.1.0/24
+# PLEX_TOKEN=<www.plex.tv/claim>
+# UID=1234
+# GID=1234
+#
+version: "3"
+
+services:
+  transmission:
+    image: haugene/transmission-openvpn
+    container_name: transmission-openvpn
+    restart: always
+    ports:
+      - "9091:9091"
+    networks:
+      - plexnet
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - OPENVPN_PROVIDER=${VPN_PROVIDER}
+      - OPENVPN_CONFIG=${VPN_CONFIG}
+      - OPENVPN_USERNAME=${VPN_USERNAME}
+      - OPENVPN_PASSWORD=${VPN_PASSWORD}
+      - LOCAL_NETWORK=${LOCAL_NET}
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - TRANSMISSION_BLOCKLIST_ENABLED=true
+      - TRANSMISSION_BLOCKLIST_URL=http://john.bitsurge.net/public/biglist.p2p.gz
+      - TRANSMISSION_IDLE_SEEDING_LIMIT=30 
+      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+      - TRANSMISSION_RATIO_LIMIT=0
+      - TRANSMISSION_RATIO_LIMIT_ENABLED=true
+      - TRANSMISSION_SPEED_LIMIT_UP=100 
+      - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
+    volumes:
+      - ${MOUNT_POINT}/transmission:/data
+      - /etc/localtime:/etc/localtime:ro
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: always
+    ports:
+      - "7878:7878"
+    networks:
+      - plexnet
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - TZ=US/Los_Angeles
+    volumes:
+      - ${MOUNT_POINT}/radarr-config:/config
+      - ${MOUNT_POINT}/transmission/completed:/downloads
+      - ${MOUNT_POINT}/plex/movies:/movies
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    restart: always
+    ports:
+      - "8989:8989"
+    networks:
+      - plexnet
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - TZ=US/Los_Angeles
+    volumes:
+      - ${MOUNT_POINT}/sonarr/config:/config
+      - ${MOUNT_POINT}/plex/tv:/tv
+      - ${MOUNT_POINT}/transmission/completed:/downloads
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    restart: always
+    networks:
+      - plexnet
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - TZ=US/Los_Angeles
+    volumes:
+      - ${MOUNT_POINT}/jackett/config:/config
+      - ${MOUNT_POINT}/jackett/downloads:/downloads
+    ports:
+      - "9117:9117"
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    restart: always
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    networks:
+      - plexnet
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - TZ=US/Los_Angeles
+      - PLEX_CLAIM=${PLEX_TOKEN}
+      - HOSTNAME=PlexServer
+    volumes:
+      - ${MOUNT_POINT}/plex-config:/config
+      - ${MOUNT_POINT}/temp:/transcode
+      - ${MOUNT_POINT}/plex:/data
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --debug --schedule "0 0 0 * * *"  # Try updating daily @ midnight.
+  muximux:
+    image: linuxserver/muximux
+    container_name: muximux
+    restart: always
+    networks:
+      - plexnet
+    ports:
+      - 8080:80/tcp
+    volumes:
+      - ${MOUNT_POINT}/muximux/config:/config
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - TZ=US/Los_Angeles
+networks:
+  plexnet:
+    driver: bridge

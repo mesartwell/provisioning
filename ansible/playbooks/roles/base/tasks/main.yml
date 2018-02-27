@@ -1,0 +1,23 @@
+---
+# The bare necessities.
+- name: Install the essentials
+  apt: name={{ item }} state=present
+  with_items:
+  - curl
+  - git
+  - htop
+  - stow
+  - sudo
+  - tcpdump
+  - tmux
+  - tree
+  - vim-nox
+  - wget
+  - zsh
+
+- name: Set timezone
+  shell: "{{ item }}"
+  become: True
+  with_items:
+    - echo "US/Los_Angeles" > /etc/timezone
+    - dpkg-reconfigure -f noninteractive tzdata

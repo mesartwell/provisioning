@@ -1,0 +1,11 @@
+---
+# Contains the external dependencies for this playbook. Install all with:
+#   ansible-galaxy install -r requirements.yml
+#
+# From galaxy
+- src: kibatic.prometheus
+- src: ansiblebit.grafana
+- src: willshersystems.sshd
+- src: nickjj.fail2ban
+- src: mongrelion.docker
+- src: elnebuloso.docker-compose

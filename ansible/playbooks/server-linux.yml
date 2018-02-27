@@ -1,0 +1,25 @@
+---
+- name: Server setup
+  hosts: localhost
+  become: true
+  roles:
+    - upgrade
+    - base
+    - server_base
+    - role: kibatic.prometheus
+    - role: ansiblebit.grafana
+    - role: willshersystems.sshd
+    - role: nickjj.fail2ban
+    - role: mongrelion.docker
+    - role: elnebuloso.docker-compose
+
+  vars:
+     # williamyeh.prometheus
+     prometheus_components: [ "prometheus", "node_exporter", "alertmanager" ]
+
+     # willshersystems.sshd
+     sshd:
+       Compression: true
+       PasswordAuthentication: no
+       GSSAPIAuthentication: no
+       PermitRootLogin: no

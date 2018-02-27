@@ -1,0 +1,7 @@
+---
+- name: Setup a standard linux install
+  hosts: localhost
+  become: true
+  roles:
+    - upgrade
+    - base

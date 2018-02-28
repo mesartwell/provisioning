@@ -60,7 +60,7 @@ services:
       - TZ=US/Los_Angeles
     volumes:
       - ${MOUNT_POINT}/radarr-config:/config
-      - ${MOUNT_POINT}/transmission/completed:/downloads
+      - ${MOUNT_POINT}/transmission/completed:/data/completed
       - ${MOUNT_POINT}/plex/movies:/movies
   sonarr:
     image: linuxserver/sonarr

@@ -47,7 +47,7 @@ services:
       - ${MOUNT_POINT}/transmission:/data
       - /etc/localtime:/etc/localtime:ro
   radarr:
-    image: linuxserver/radarr
+    image: linuxserver/radarr:91
     container_name: radarr
     restart: always
     ports:
@@ -141,7 +141,7 @@ services:
       - PUID=${UID}
       - TZ=US/Los_Angeles
   ombi:
-    image: linuxserver/ombi
+    image: linuxserver/ombi:62
     container_name: ombi
     restart: always
     networks:

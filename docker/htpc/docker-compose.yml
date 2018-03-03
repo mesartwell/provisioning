@@ -191,6 +191,14 @@ services:
       - /dev/disk/:/dev/disk:ro
     environment:
       - TZ=US/Los_Angeles
+  duckdns:
+    image: linuxserver/duckdns
+    container_name: duckdns
+    restart: always
+    environment:
+      - TZ=US/Los_Angeles
+      - SUBDOMAINS=${DDNS_SUBDOMAINS}
+      - TOKEN={$DDNS_TOKEN}
 
 networks:
   plexnet:

@@ -119,13 +119,6 @@ services:
       - ${MOUNT_POINT}/plex-config:/config
       - ${MOUNT_POINT}/temp:/transcode
       - ${MOUNT_POINT}/plex:/data
-  watchtower:
-    image: v2tec/watchtower
-    container_name: watchtower
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --debug --schedule "0 0 0 1,15 * *"  # ~Biweekly updates.
   muximux:
     image: linuxserver/muximux
     container_name: muximux
@@ -155,6 +148,36 @@ services:
       - PGID=${GID}
       - PUID=${UID}
       - TZ=US/Los_Angeles
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --debug --schedule "0 0 0 1,15 * *"  # ~Biweekly updates.
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: always
+    ports:
+      - 9000:9000/tcp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer:/data
+    environment:
+      - TZ=US/Los_Angeles
+  smokeping:
+    image: linuxserver/smokeping
+    container_name: smokeping
+    restart: always
+    ports:
+      - 9500:80
+    volumes:
+      - /opt/smokeping/data:/data
+      - /opt/smokeping/config:/config
+    environment:
+      - TZ=US/Los_Angeles
+
 networks:
   plexnet:
     driver: bridge

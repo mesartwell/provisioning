@@ -125,7 +125,7 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --debug --schedule "0 0 0 * * *"  # Try updating daily @ midnight.
+    command: --debug --schedule "0 0 0 1,15 * *"  # ~Biweekly updates.
   muximux:
     image: linuxserver/muximux
     container_name: muximux

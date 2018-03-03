@@ -177,6 +177,20 @@ services:
       - /opt/smokeping/config:/config
     environment:
       - TZ=US/Los_Angeles
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    restart: always
+    ports:
+      - 9600:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    environment:
+      - TZ=US/Los_Angeles
 
 networks:
   plexnet:

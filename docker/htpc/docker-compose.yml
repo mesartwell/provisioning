@@ -1,4 +1,4 @@
-# To run: docker-compose up [-d for background launch]
+# tO RUN: DOCKER-COMPOSE UP [-d for background launch]
 #
 # Create a .evn file in the same folder as this file and change the variables.
 # MOUNT_POINT=/tmp/
@@ -10,6 +10,11 @@
 # PLEX_TOKEN=<www.plex.tv/claim>
 # UID=1234
 # GID=1234
+# DDNS_SUBDOMAINS=changeme
+# DDNS_TOKEN=changeme
+# LE_EMAIL=changeme
+# LE_URL=changeme
+# LE_SUBDOMAINS=changeme
 #
 version: "3"
 
@@ -37,11 +42,11 @@ services:
       - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
       - TRANSMISSION_BLOCKLIST_ENABLED=true
       - TRANSMISSION_BLOCKLIST_URL=http://john.bitsurge.net/public/biglist.p2p.gz
-      - TRANSMISSION_IDLE_SEEDING_LIMIT=30 
+      - TRANSMISSION_IDLE_SEEDING_LIMIT=30
       - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
       - TRANSMISSION_RATIO_LIMIT=0
       - TRANSMISSION_RATIO_LIMIT_ENABLED=true
-      - TRANSMISSION_SPEED_LIMIT_UP=100 
+      - TRANSMISSION_SPEED_LIMIT_UP=100
       - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
     volumes:
       - ${MOUNT_POINT}/transmission:/data
@@ -199,6 +204,27 @@ services:
       - TZ=US/Los_Angeles
       - SUBDOMAINS=${DDNS_SUBDOMAINS}
       - TOKEN={$DDNS_TOKEN}
+  letsencrypt:
+    image: linuxserver/letsencrypt
+    container_name: le
+    ports:
+      - 443:443
+    networks:
+      - plexnet
+    volumes:
+      - /opt/appdata/letsencrypt:/config
+    restart: always
+    cap_add:
+      - NET_ADMIN # Allows fail2ban to modify iptable rules.
+    environment:
+      - TZ=US/Los_Angeles
+      - EMAIL=${LE_EMAIL}
+      - URL=${LE_URL}
+      - SUBDOMAINS=${LE_SUBDOMAINS}
+      - ONLY_SUBDOMAINS=true
+      - DHLEVEL=4096
+      - VALIDATION=dns # tls-sni validation was unavailable at the time.
+      - DNSPLUGIN=cloudflare
 
 networks:
   plexnet:

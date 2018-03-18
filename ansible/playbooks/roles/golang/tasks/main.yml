@@ -1,0 +1,7 @@
+- name: add PPA
+  sudo: true
+  apt_repository: repo=ppa:gophers/go
+
+- name: install package
+  sudo: true
+  apt: pkg=golang-stable

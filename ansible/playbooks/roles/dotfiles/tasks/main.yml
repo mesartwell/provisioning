@@ -1,0 +1,24 @@
+---
+- name: Create dotfiles directory
+  file:
+    path: "{{ dotfiles_path }}"
+    state: directory
+    owner: "{{ dotfiles_user }}"
+    group: "{{ dotfiles_user }}"
+  tags: dotfiles
+
+- name: Clone dotfiles
+  git:
+    repo: "{{ dotfiles_repo }}"
+    dest: "{{ dotfiles_path }}"
+    track_submodules: True
+    force: True
+  become: True
+  become_user: "{{ dotfiles_user }}"
+  tags: dotfiles
+
+- name: Install dotfiles
+  shell: "make install chdir={{ dotfiles_path }}"
+  become: True
+  become_user: "{{ dotfiles_user }}"
+  tags: dotfiles

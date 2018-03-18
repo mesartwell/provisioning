@@ -3,15 +3,20 @@
 - name: Install the essentials
   apt: name={{ item }} state=present
   with_items:
+  - ctags
   - curl
+  - dnsutils
   - git
   - htop
+  - nmap
+  - mtr
   - stow
   - sudo
   - tcpdump
   - tmux
   - tree
   - vim-nox
+  - weechat
   - wget
   - zsh
 

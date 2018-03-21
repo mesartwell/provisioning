@@ -1,0 +1,5 @@
+---
+- name: Dev tooling for linux machine.
+    - golang
+    - role: wtanaka.protobuf-compiler
+    - role: andrewrothstein.bazel

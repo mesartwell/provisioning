@@ -24,5 +24,6 @@ Then simply execute the desired playbook:
                     tools and sets timezone.
 * `server-linux.yml`: Solid server foundation. Installs packages like docker,
                       fail2ban, openssh, grafana, prometheus.
+* `dev-linux.yml`: Packages needed on machines where dev-work is to occur.
 
 

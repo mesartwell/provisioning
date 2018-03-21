@@ -9,3 +9,5 @@
 - src: nickjj.fail2ban
 - src: mongrelion.docker
 - src: elnebuloso.docker-compose
+- src: wtanaka.protobuf-compiler
+- src: andrewrothstein.bazel

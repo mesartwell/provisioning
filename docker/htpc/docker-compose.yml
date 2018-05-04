@@ -1,4 +1,4 @@
-# tO RUN: DOCKER-COMPOSE UP [-d for background launch]
+# TO RUN: DOCKER-COMPOSE UP [-d for background launch]
 #
 # Create a .evn file in the same folder as this file and change the variables.
 # MOUNT_POINT=/tmp/
@@ -49,7 +49,7 @@ services:
       - TRANSMISSION_SPEED_LIMIT_UP=100
       - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=true
     volumes:
-      - ${MOUNT_POINT}/transmission:/data
+      - ${MOUNT_POINT}/downloads:/data
       - /etc/localtime:/etc/localtime:ro
   radarr:
     image: linuxserver/radarr
@@ -65,7 +65,7 @@ services:
       - TZ=US/Los_Angeles
     volumes:
       - ${MOUNT_POINT}/radarr-config:/config
-      - ${MOUNT_POINT}/transmission/completed:/data/completed
+      - ${MOUNT_POINT}/downloads/completed:/data/completed
       - ${MOUNT_POINT}/plex/movies:/movies
   sonarr:
     image: linuxserver/sonarr
@@ -82,7 +82,20 @@ services:
     volumes:
       - ${MOUNT_POINT}/sonarr/config:/config
       - ${MOUNT_POINT}/plex/tv:/tv
-      - ${MOUNT_POINT}/transmission/completed:/data/completed
+      - ${MOUNT_POINT}/downloads/completed:/data/completed
+  hydra:
+    image: linuxserver/hydra
+    container_name: hydra
+    restart: always
+    ports:
+      - 5075:5075
+    networks:
+      - plexnet
+    environment:
+      - TZ=US/Los_Angeles
+    volumes:
+      - ${MOUNT_POINT}/hydra-config:/config
+      - ${MOUNT_POINT}/hydra/downloads:/downloads
   jackett:
     image: linuxserver/jackett
     container_name: jackett
@@ -231,6 +244,8 @@ services:
     container_name: sabnzbd
     restart: always
     environment:
+      - PGID=${GID}
+      - PUID=${UID}
       - TZ=US/Los_Angeles
     ports:
       - 8081:8080
@@ -239,7 +254,7 @@ services:
       - plexnet
     volumes:
       - ${MOUNT_POINT}/sabnzbd-config:/config
-      - ${MOUNT_POINT}/sabnzbd/downloads:/downloads
+      - ${MOUNT_POINT}/downloads/completed:/downloads
       - ${MOUNT_POINT}/sabnzbd/incomplete-downloads:/incomplete-downloads
 
 networks:

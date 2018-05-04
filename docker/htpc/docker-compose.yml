@@ -52,7 +52,7 @@ services:
       - ${MOUNT_POINT}/transmission:/data
       - /etc/localtime:/etc/localtime:ro
   radarr:
-    image: linuxserver/radarr:91
+    image: linuxserver/radarr
     container_name: radarr
     restart: always
     ports:
@@ -139,7 +139,7 @@ services:
       - PUID=${UID}
       - TZ=US/Los_Angeles
   ombi:
-    image: linuxserver/ombi:62
+    image: linuxserver/ombi
     container_name: ombi
     restart: always
     networks:
@@ -205,8 +205,9 @@ services:
       - SUBDOMAINS=${DDNS_SUBDOMAINS}
       - TOKEN={$DDNS_TOKEN}
   letsencrypt:
+    # Runs nginx reverse proxy.
     image: linuxserver/letsencrypt
-    container_name: le
+    container_name: nginx-revproxy
     ports:
       - 443:443
     networks:
@@ -225,6 +226,21 @@ services:
       - DHLEVEL=4096
       - VALIDATION=dns # tls-sni validation was unavailable at the time.
       - DNSPLUGIN=cloudflare
+  sabnzbd:
+    image: linuxserver/sabnzbd
+    container_name: sabnzbd
+    restart: always
+    environment:
+      - TZ=US/Los_Angeles
+    ports:
+      - 8081:8080
+      - 9099:9090 # HTTPS GUI
+    networks:
+      - plexnet
+    volumes:
+      - ${MOUNT_POINT}/sabnzbd-config:/config
+      - ${MOUNT_POINT}/sabnzbd/downloads:/downloads
+      - ${MOUNT_POINT}/sabnzbd/incomplete-downloads:/incomplete-downloads
 
 networks:
   plexnet:
